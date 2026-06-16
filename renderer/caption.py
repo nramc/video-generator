@@ -12,7 +12,7 @@ def add_title_overlay(clip, text):
     # ✅ safe default font
     # font = ImageFont.load_default()
 
-    font = ImageFont.truetype("Arial.ttf",80)
+    font = ImageFont.truetype("Arial.ttf",55)
 
 
     # ✅ measure text
@@ -33,7 +33,7 @@ def add_title_overlay(clip, text):
             x + text_w + padding,
             y + text_h + padding
         ],
-        fill=(0, 0, 0, 180)
+        fill=(52, 89, 230, 200)
     )
 
     # ✅ draw text
