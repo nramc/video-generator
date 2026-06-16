@@ -1,9 +1,11 @@
+import json
 from tracemalloc import start
 
 from moviepy import VideoFileClip
 import random
 
 from timeline.beat_detector import generate_duration_using_beats
+from utils.date_utils import get_file_name_with_date
 
 
 
@@ -11,6 +13,10 @@ def generate_timeline_using_beats(media_files, music_path):
     durations = generate_duration_using_beats(music_path)
 
     timeline = build_timeline(media_files, durations)
+
+    output_path= "output/"+ get_file_name_with_date("timeline_beat.json")
+    with open(output_path, "w") as f:
+        json.dump(timeline, f, indent=2)
 
     return timeline
 
