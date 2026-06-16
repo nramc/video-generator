@@ -14,9 +14,9 @@
    ```
 3. Run Application
     ```bash
-      python cli.py --timeline timeline.json --music assets/musics/music.mp3
+      python cli.py --timeline timeline.json --music assets/musics/music.mp3 --title='My First Automated Journey'
 
-      python cli.py --auto-beat --music assets/musics/music.mp3 --media assets
+      python cli.py --auto-beat --music assets/musics/music.mp3 --media assets --title='My First Automated Journey'
 
-      python cli.py --auto-beat --media assets/ --music assets/musics/music.mp3 --use-llm
+      python cli.py --auto-beat --media assets/ --music assets/musics/music.mp3 --use-llm --title='My First Automated Journey'
     ```

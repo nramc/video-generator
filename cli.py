@@ -21,6 +21,9 @@ def main():
     parser.add_argument("--use-llm", action="store_true", help="Generate timeline via LLM")
     parser.add_argument("--auto-beat", action="store_true", help="Generate timeline via auto beat detection")
 
+    parser.add_argument("--title", help="Title to show on first clip", required=True)
+
+
     args = parser.parse_args()
 
     timeline = None
@@ -43,7 +46,7 @@ def main():
     if timeline is None:
         raise ValueError("❌ No timeline provided. Use --timeline, --use-llm or --auto-beat")
     
-    render_video(timeline, args.music, args.output)
+    render_video(timeline, args.music, args.output, args.title)
 
 if __name__ == "__main__":
     main()

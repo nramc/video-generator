@@ -1,5 +1,5 @@
 moviepy
-Pillow
+Pillow==9.5.0
 librosa
 numpy
 numba

@@ -1,13 +1,15 @@
 from moviepy import ImageClip, VideoFileClip, concatenate_videoclips, AudioFileClip
 from moviepy.video.fx import CrossFadeIn
 
+from renderer.caption import add_title_overlay
 from utils.effects_utils import ken_burns_effect, normalize_clip
 
 
-def render_video(timeline, music_path, output_path):
+def render_video(timeline, music_path, output_path, title=None):
     clips = []
 
-    for item in timeline:
+    for i, item in enumerate(timeline):
+
         if item["type"] == "image":
             clip = ImageClip(item["file"], duration=max(2, item["duration"]))
 
@@ -20,6 +22,10 @@ def render_video(timeline, music_path, output_path):
         # Apply Ken Burns ONLY to images
         if item["type"] == "image":
             clip = ken_burns_effect(clip)
+
+        # ✅ Apply title only to first clip
+        if i == 0 and title:
+            clip = add_title_overlay(clip, title)
 
         clips.append(clip)
 
