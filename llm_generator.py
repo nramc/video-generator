@@ -1,24 +1,46 @@
+import os
 import subprocess
 import json
 
-OUTPUT_FILE = "timeline.json"
+
+def generate_timeline_using_llm(media_files, music_file):
+    output_dir = "output"
+    os.makedirs(output_dir, exist_ok=True)
+    files_str = "\n".join(media_files)
+
+    prompt = f"""
+You are a video editor AI.
+
+Goal:
+Create a clean video timeline JSON that combines the following media files (images and videos) with the provided background music.
+The timeline should be engaging and well-paced, matching the rhythm and mood of the music.
 
 
-def generate_timeline_if_needed():
-    prompt = """
-Create a JSON video timeline.
+Rules:
+- DO NOT skip any file
+- Use all files at least once
+- Keep order meaningful
+- Assign importance (1 = normal, 2 = important highlight)
+- Assign duration (in seconds) for each file (for both images and videos) based on the music and importance
+- Only output **valid** JSON array, no explanations, no extra text, no comments.
 
-Assets:
-- images: assets/images/img1.jpg, img2.jpg
-- video: assets/videos/clip1.mp4
+Media files:
+{files_str}
 
-Output JSON format:
+Background music file:
+{music_file}
+
+Output format:
 [
-  {"type": "image", "file": "...", "duration": 3},
-  {"type": "video", "file": "...", "start": 0, "end": 5}
+  {{
+    "file": "...",
+    "type": "image or video",
+    "importance": 1,
+    "duration": 3.0,  # for both images and videos
+    "start": 4.0,     # where to start in the video (for videos, this is the start position in the video)
+    "end": 7.0        # where to end in the video (for videos, this is the end position in the video)
+  }}
 ]
-
-ONLY output valid JSON.
 """
 
     result = subprocess.run(
@@ -27,13 +49,25 @@ ONLY output valid JSON.
         text=True
     )
 
-    output = result.stdout
+    raw = result.stdout
 
-    # crude extraction (can improve later)
-    json_start = output.find("[")
-    json_data = output[json_start:]
+    print("LLM Raw Output:")
+    print(raw)
 
-    with open(OUTPUT_FILE, "w") as f:
-        f.write(json_data)
+    # extract JSON
+    start = raw.find("[");
+    json_text = raw[start:]
+    print("Extracted JSON:")
+    print(json_text)
 
-    return OUTPUT_FILE
+    timeline = json.loads(json_text)
+
+    output_path = os.path.join(output_dir, "timeline_llm.json")
+    with open(output_path, "w") as f:
+      json.dump(timeline, f, indent=2)
+
+    print(f"✅ LLM timeline saved: {output_path}")
+
+
+  
+    return timeline

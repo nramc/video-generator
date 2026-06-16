@@ -8,14 +8,13 @@ def render_video(timeline, music_path, output_path):
 
     for item in timeline:
         if item["type"] == "image":
-            clip = ImageClip(item["file"], duration=item["duration"])
+            clip = ImageClip(item["file"], duration=max(3, item["duration"]))
 
         elif item["type"] == "video":
-            clip = VideoFileClip(item["file"]).subclipped(
-                item.get("start", 0),
-                item.get("end")
-            )
-
+            clip = safe_subclip(item["file"], item.get("start", 0), item.get("end"))
+        else:
+            continue
+        
         clip = normalize_clip(clip)
         # Apply Ken Burns ONLY to images
         if item["type"] == "image":
@@ -36,3 +35,23 @@ def render_video(timeline, music_path, output_path):
     final = video.with_audio(audio)
 
     final.write_videofile(output_path, fps=24)
+
+
+
+def safe_subclip(file, start=None, end=None):
+    clip = VideoFileClip(file)
+
+    duration = clip.duration
+
+    start = start or 0
+    end = end or duration
+
+    # ✅ Clamp values
+    start = max(0, start)
+    end = min(end, duration)
+
+    # ✅ Fix invalid ranges
+    if start >= end:
+        return clip
+
+    return clip.subclipped(start, end)

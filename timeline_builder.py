@@ -20,3 +20,29 @@ def validate_timeline(timeline):
 
         if not os.path.exists(item["file"]):
             raise FileNotFoundError(f"Missing file: {item['file']}")
+        
+
+def apply_beat_durations(llm_timeline, durations):
+    timeline = []
+
+    for i, item in enumerate(llm_timeline):
+        duration = durations[i % len(durations)]
+
+        duration = max(2.0, duration)
+
+        if item["type"] == "image":
+            timeline.append({
+                "type": "image",
+                "file": item["file"],
+                "duration": duration
+            })
+
+        else:
+            timeline.append({
+                "type": "video",
+                "file": item["file"],
+                "start": item.get("start", 0),
+                "end": item.get("start", 0) + duration
+            })
+
+    return timeline

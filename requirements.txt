@@ -1,2 +1,7 @@
 moviepy
 Pillow
+librosa
+numpy
+numba
+llvmlite
+scipy
