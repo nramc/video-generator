@@ -2,6 +2,8 @@ from moviepy import CompositeVideoClip, ImageClip
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 
+from renderer.animation import animate_card
+
 
 def add_title_overlay(clip, title, subtitle='15.09.2024'):
     w, h = clip.size
@@ -65,7 +67,15 @@ def add_title_overlay(clip, title, subtitle='15.09.2024'):
             y + total_h + padding
         ],
         radius=20,
-        fill=(52, 89, 230, 200)
+        fill=(52, 89, 230, 255)
+    )
+
+    # subtle glow outline
+    draw.rounded_rectangle(
+        [x - padding, y - padding, x + max_w + padding, y + total_h + padding],
+        radius=20,
+        outline=(120, 160, 255, 80),
+        width=2
     )
 
 
@@ -84,4 +94,6 @@ def add_title_overlay(clip, title, subtitle='15.09.2024'):
 
     txt_clip = ImageClip(np.array(img)).with_duration(min(3, clip.duration))
 
-    return CompositeVideoClip([clip, txt_clip])
+    animated = animate_card(txt_clip, duration=0.8)
+
+    return CompositeVideoClip([clip, animated])
