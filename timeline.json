@@ -1,0 +1,29 @@
+[
+  {
+    "type": "image",
+    "file": "assets/images/img1.jpg",
+    "duration": 3
+  },
+  {
+    "type": "video",
+    "file": "assets/videos/clip1.mp4",
+    "start": 0,
+    "end": 5
+  },
+  {
+    "type": "image",
+    "file": "assets/images/img2.jpg",
+    "duration": 4
+  },
+  {
+    "type": "video",
+    "file": "assets/videos/clip2.mp4",
+    "start": 0,
+    "end": 5
+  },
+  {
+    "type": "image",
+    "file": "assets/images/img3.jpg",
+    "duration": 4
+  }
+]
