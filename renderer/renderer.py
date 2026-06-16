@@ -2,7 +2,8 @@ from moviepy import ImageClip, VideoFileClip, concatenate_videoclips, AudioFileC
 from moviepy.video.fx import CrossFadeIn
 
 from renderer.caption import add_title_overlay
-from utils.effects_utils import ken_burns_effect, normalize_clip
+from renderer.clip_normalizer import normalize_clip
+from utils.effects_utils import ken_burns_effect
 
 
 def render_video(timeline, music_path, output_path, title=None):

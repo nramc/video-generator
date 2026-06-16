@@ -1,5 +1,3 @@
-def normalize_clip(clip, resolution=(1280, 720)):
-    return clip.resized(resolution)
 
 def ken_burns_zoom(clip, zoom_factor=1.1):
     """
