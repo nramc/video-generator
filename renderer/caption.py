@@ -42,15 +42,32 @@ def add_title_overlay(clip, title, subtitle='15.09.2024'):
     padding = 25
 
     # ✅ background (your theme color)
-    draw.rectangle(
+    #draw.rectangle([x - padding, y - padding, x + max_w + padding, y + total_h + padding ], fill=(52, 89, 230, 200))
+
+    # shadow (depth)
+    draw.rounded_rectangle(
+        [
+            x - padding + 4,
+            y - padding + 4,
+            x + max_w + padding + 4,
+            y + total_h + padding + 4
+        ],
+        radius=20,
+        fill=(0, 0, 0, 100)
+    )
+
+    # main card
+    draw.rounded_rectangle(
         [
             x - padding,
             y - padding,
             x + max_w + padding,
             y + total_h + padding
         ],
-        fill=(52, 89, 230, 200)  # ✅ #3459e6
+        radius=20,
+        fill=(52, 89, 230, 200)
     )
+
 
     # ✅ TITLE (white + shadow)
     tx = (w - t_w) // 2
