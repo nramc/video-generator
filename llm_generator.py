@@ -2,6 +2,8 @@ import os
 import subprocess
 import json
 
+from date_utils import get_file_name_with_date
+
 
 def generate_timeline_using_llm(media_files, music_file):
     output_dir = "output"
@@ -20,7 +22,8 @@ Rules:
 - DO NOT skip any file
 - Use all files at least once
 - Keep order meaningful
-- Assign importance (1 = normal, 2 = important highlight)
+- Assign importance (1 = normal, 2 = important highlight) and duration for each file based on the music and importance
+- Arrange files in a way that creates a compelling narrative or visual flow, while adhering to the rhythm and mood of the music.
 - Assign duration (in seconds) for each file (for both images and videos) based on the music and importance
 - Only output **valid** JSON array, no explanations, no extra text, no comments.
 
@@ -35,7 +38,7 @@ Output format:
   {{
     "file": "...",
     "type": "image or video",
-    "importance": 1,
+    "importance": 1, # 1 = normal, 2 = important highlight
     "duration": 3.0,  # for both images and videos
     "start": 4.0,     # where to start in the video (for videos, this is the start position in the video)
     "end": 7.0        # where to end in the video (for videos, this is the end position in the video)
@@ -62,7 +65,7 @@ Output format:
 
     timeline = json.loads(json_text)
 
-    output_path = os.path.join(output_dir, "timeline_llm.json")
+    output_path = os.path.join(output_dir, get_file_name_with_date("timeline_llm.json"))
     with open(output_path, "w") as f:
       json.dump(timeline, f, indent=2)
 

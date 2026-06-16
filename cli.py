@@ -1,6 +1,7 @@
 import argparse
 from html import parser
 from auto_timeline import generate_timeline_using_beats
+from date_utils import get_file_name_with_date
 from media_loader import load_media_files
 from renderer import render_video
 from timeline_builder import load_timeline
@@ -13,7 +14,7 @@ def main():
     parser.add_argument("--media",help="Path to folder containing images/videos",required=False)
 
     
-    parser.add_argument("--output", default="output/output.mp4", help="Path to output video")
+    parser.add_argument("--output", default="output/"+get_file_name_with_date("output.mp4"), help="Path to output video")
 
     parser.add_argument("--timeline", help="Path to timeline.json")
     parser.add_argument("--use-llm", action="store_true", help="Generate timeline via LLM")
