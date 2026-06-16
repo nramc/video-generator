@@ -1,3 +1,8 @@
+from tracemalloc import start
+
+from moviepy import VideoFileClip
+import random
+
 from beat_detector import detect_beats
 
 
@@ -42,11 +47,23 @@ def build_timeline(media_files, durations):
                 "duration": duration
             })
         else:
+            
+            lip_full = VideoFileClip(file)
+            video_length = lip_full.duration
+
+            # playback duration (from beats)
+            play_duration = duration
+
+            # ✅ choose safe random start
+            max_start = max(0, video_length - play_duration)
+            start = random.uniform(0, max_start) if max_start > 0 else 0
+            end = start + play_duration
+
             timeline.append({
                 "type": "video",
                 "file": file,
-                "start": 0,
-                "end": duration
+                "start": start,
+                "end": end
             })
 
     return timeline

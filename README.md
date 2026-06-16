@@ -17,4 +17,6 @@
       python cli.py --timeline timeline.json --music assets/musics/music.mp3
 
       python cli.py --auto-beat --music assets/musics/music.mp3 --media assets
+
+      python cli.py --auto-beat --media assets/ --music assets/musics/music.mp3 --use-llm
     ```
