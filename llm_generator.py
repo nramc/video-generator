@@ -2,6 +2,7 @@ import os
 import subprocess
 import json
 
+from auto_timeline import generate_duration_using_beats
 from date_utils import get_file_name_with_date
 
 
@@ -9,13 +10,14 @@ def generate_timeline_using_llm(media_files, music_file):
     output_dir = "output"
     os.makedirs(output_dir, exist_ok=True)
     files_str = "\n".join(media_files)
+    durations = generate_duration_using_beats(music_file)
 
     prompt = f"""
 You are a video editor AI.
 
 Goal:
 Create a clean video timeline JSON that combines the following media files (images and videos) with the provided background music.
-The timeline should be engaging and well-paced, matching the rhythm and mood of the music.
+The timeline should be engaging and well-paced, matching the rhythm and mood of the music. Duration each file based on duration extracted from the music beats.
 
 
 Rules:
@@ -24,7 +26,7 @@ Rules:
 - Keep order meaningful
 - Assign importance (1 = normal, 2 = important highlight) and duration for each file based on the music and importance
 - Arrange files in a way that creates a compelling narrative or visual flow, while adhering to the rhythm and mood of the music.
-- Assign duration (in seconds) for each file (for both images and videos) based on the music and importance
+- Assign duration (in seconds) for each file (for both images and videos) based on the music and importance from the beats. Combine shorter beats to create longer durations for important highlights.
 - Only output **valid** JSON array, no explanations, no extra text, no comments.
 
 Media files:
@@ -32,6 +34,9 @@ Media files:
 
 Background music file:
 {music_file}
+
+Music beat durations (in seconds):
+{durations}
 
 Output format:
 [
@@ -54,16 +59,12 @@ Output format:
 
     raw = result.stdout
 
-    print("LLM Raw Output:")
-    print(raw)
-
     # extract JSON
     start = raw.find("[");
     json_text = raw[start:]
-    print("Extracted JSON:")
-    print(json_text)
 
     timeline = json.loads(json_text)
+
 
     output_path = os.path.join(output_dir, get_file_name_with_date("timeline_llm.json"))
     with open(output_path, "w") as f:

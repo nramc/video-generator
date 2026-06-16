@@ -8,7 +8,7 @@ def render_video(timeline, music_path, output_path):
 
     for item in timeline:
         if item["type"] == "image":
-            clip = ImageClip(item["file"], duration=max(3, item["duration"]))
+            clip = ImageClip(item["file"], duration=max(2, item["duration"]))
 
         elif item["type"] == "video":
             clip = safe_subclip(item["file"], item.get("start", 0), item.get("end"))
