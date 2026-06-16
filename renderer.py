@@ -1,6 +1,7 @@
 from moviepy import ImageClip, VideoFileClip, concatenate_videoclips, AudioFileClip
-from utils import normalize_clip, ken_burns_effect
 from moviepy.video.fx import CrossFadeIn
+
+from utils.effects_utils import ken_burns_effect, normalize_clip
 
 
 def render_video(timeline, music_path, output_path):
