@@ -1,51 +1,70 @@
+from moviepy import CompositeVideoClip, ImageClip
 from PIL import Image, ImageDraw, ImageFont
-from moviepy import ImageClip, TextClip, CompositeVideoClip
-import numpy as np    
+import numpy as np
 
-def add_title_overlay(clip, text):
+
+def add_title_overlay(clip, title, subtitle='15.09.2024'):
     w, h = clip.size
 
-    # ✅ create transparent image
     img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
 
-    # ✅ safe default font
-    # font = ImageFont.load_default()
+    # ✅ fonts
+    title_font = ImageFont.truetype(
+        "/System/Library/Fonts/Supplemental/Arial.ttf",
+        int(h * 0.06)
+    )
+    subtitle_font = ImageFont.truetype(
+        "/System/Library/Fonts/Supplemental/Arial.ttf",
+        int(h * 0.035)
+    )
 
-    font = ImageFont.truetype("Arial.ttf",55)
+    # ✅ measure title
+    t_bbox = draw.textbbox((0, 0), title, font=title_font)
+    t_w = t_bbox[2] - t_bbox[0]
+    t_h = t_bbox[3] - t_bbox[1]
 
+    # ✅ measure subtitle
+    if subtitle:
+        s_bbox = draw.textbbox((0, 0), subtitle, font=subtitle_font)
+        s_w = s_bbox[2] - s_bbox[0]
+        s_h = s_bbox[3] - s_bbox[1]
+    else:
+        s_w = s_h = 0
 
-    # ✅ measure text
-    bbox = draw.textbbox((0, 0), text, font=font)
-    text_w = bbox[2] - bbox[0]
-    text_h = bbox[3] - bbox[1]
+    # ✅ block dimensions
+    max_w = max(t_w, s_w)
+    total_h = t_h + (s_h + 10 if subtitle else 0)
 
-    # ✅ center horizontally, near bottom
-    x = (w - text_w) // 2
-    y = int(h * 0.75)
+    x = (w - max_w) // 2
+    y = int(h * 0.70)
 
-    # ✅ background box
     padding = 25
+
+    # ✅ background (your theme color)
     draw.rectangle(
         [
             x - padding,
             y - padding,
-            x + text_w + padding,
-            y + text_h + padding
+            x + max_w + padding,
+            y + total_h + padding
         ],
-        fill=(52, 89, 230, 200)
+        fill=(52, 89, 230, 200)  # ✅ #3459e6
     )
 
-    # ✅ draw text
-    draw.text((x, y), text, font=font, fill=(255, 255, 255, 255))
+    # ✅ TITLE (white + shadow)
+    tx = (w - t_w) // 2
+    draw.text((tx + 2, y + 2), title, font=title_font, fill=(0, 0, 0, 150))
+    draw.text((tx, y), title, font=title_font, fill=(255, 255, 255, 255))
 
-    # ✅ shadow
-    draw.text((x+2, y+2), text, font=font, fill=(0, 0, 0, 150))
-    draw.text((x, y), text, font=font, fill=(255, 255, 255))
+    # ✅ SUBTITLE
+    if subtitle:
+        sy = y + t_h + 10
+        sx = (w - s_w) // 2
 
+        draw.text((sx + 2, sy + 2), subtitle, font=subtitle_font, fill=(0, 0, 0, 120))
+        draw.text((sx, sy), subtitle, font=subtitle_font, fill=(235, 235, 235, 255))
 
-
-    # ✅ convert to clip
-    txt_clip = ImageClip(np.array(img)).with_duration(clip.duration)
+    txt_clip = ImageClip(np.array(img)).with_duration(min(3, clip.duration))
 
     return CompositeVideoClip([clip, txt_clip])
