@@ -13,11 +13,11 @@ def add_title_overlay(clip, title, subtitle=None):
 
     # ✅ fonts
     title_font = ImageFont.truetype(
-        "/System/Library/Fonts/Supplemental/Arial.ttf",
+        "assets/fonts/dejavu-sans/DejaVuSans-Bold.ttf",
         int(h * 0.06)
     )
     subtitle_font = ImageFont.truetype(
-        "/System/Library/Fonts/Supplemental/Arial.ttf",
+        "assets/fonts/dejavu-sans/DejaVuSans-Bold.ttf",
         int(h * 0.035)
     )
 
