@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor
 import json
 from tracemalloc import start
 
@@ -6,6 +7,7 @@ import random
 
 from timeline.beat_detector import generate_duration_using_beats
 from utils.date_utils import get_file_name_with_date
+from utils.video_normalizer import ensure_valid_video
 
 
 
@@ -28,7 +30,12 @@ def build_timeline(media_files, durations, max_video_reuse=2):
     video_ext = (".mp4", ".mov", ".mkv")
 
     images = [f for f in media_files if f.lower().endswith(image_ext)]
-    videos = [f for f in media_files if f.lower().endswith(video_ext)]
+    video_files = [f for f in media_files if f.lower().endswith(video_ext)]
+    
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        videos = list(executor.map(ensure_valid_video, video_files))
+
+
 
     random.shuffle(images)
     image_index = 0
