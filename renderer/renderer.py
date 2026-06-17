@@ -3,6 +3,7 @@ from moviepy.video.fx import CrossFadeIn
 
 from renderer.caption import add_title_overlay
 from renderer.clip_normalizer import normalize_clip
+from renderer.image_loader import load_image_clip
 from utils.effects_utils import ken_burns_effect
 
 
@@ -12,7 +13,7 @@ def render_video(timeline, music_path, output_path, title=None, subtitle=None):
     for i, item in enumerate(timeline):
 
         if item["type"] == "image":
-            clip = ImageClip(item["file"], duration=max(2, item["duration"]))
+            clip = load_image_clip(item["file"],duration=max(2, item["duration"]))
 
         elif item["type"] == "video":
             clip = safe_subclip(item["file"], item.get("start", 0), item.get("end"))

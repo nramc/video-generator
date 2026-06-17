@@ -1,5 +1,5 @@
 from moviepy import CompositeVideoClip, ImageClip
-from PIL import Image, ImageFilter
+from PIL import Image, ImageFilter, ImageOps
 import numpy as np
 
 
@@ -16,7 +16,10 @@ def normalize_clip(clip, resolution=(1280, 720)):
 
     # ✅ blurred background
     frame = clip.get_frame(0)
-    img = Image.fromarray(frame).resize(resolution)
+    img = Image.fromarray(frame)
+    img = ImageOps.exif_transpose(img)
+    img = img.resize(resolution)
+
     img = img.filter(ImageFilter.GaussianBlur(25))
 
     bg = ImageClip(np.array(img)).with_duration(clip.duration)
