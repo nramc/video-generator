@@ -5,7 +5,7 @@ import numpy as np
 from renderer.animation import animate_card
 
 
-def add_title_overlay(clip, title, subtitle='15.09.2024'):
+def add_title_overlay(clip, title, subtitle=None):
     w, h = clip.size
 
     img = Image.new("RGBA", (w, h), (0, 0, 0, 0))

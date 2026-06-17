@@ -6,7 +6,7 @@ from renderer.clip_normalizer import normalize_clip
 from utils.effects_utils import ken_burns_effect
 
 
-def render_video(timeline, music_path, output_path, title=None):
+def render_video(timeline, music_path, output_path, title=None, subtitle=None):
     clips = []
 
     for i, item in enumerate(timeline):
@@ -26,7 +26,7 @@ def render_video(timeline, music_path, output_path, title=None):
 
         # ✅ Apply title only to first clip
         if i == 0 and title:
-            clip = add_title_overlay(clip, title)
+            clip = add_title_overlay(clip, title, subtitle)
 
         clips.append(clip)
 
