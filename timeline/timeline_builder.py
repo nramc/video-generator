@@ -9,6 +9,12 @@ def load_timeline(path):
     with open(path, "r") as f:
         timeline = json.load(f)
 
+    # ✅ FINAL END CARD
+    timeline.append({
+        "type": "image",
+        "file": "assets/images/journey-end-card.png",
+        "duration": 4.0
+    })
     validate_timeline(timeline)
     return timeline
 

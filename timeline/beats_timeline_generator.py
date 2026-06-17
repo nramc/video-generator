@@ -168,4 +168,11 @@ def build_timeline(media_files, durations, max_video_reuse=2):
         else:
             break
 
+    # ✅ FINAL END CARD
+    timeline.append({
+        "type": "image",
+        "file": "assets/images/journey-end-card.png",
+        "duration": 4.0
+    })
+
     return timeline
