@@ -33,6 +33,8 @@ def generate_duration_using_beats(music_path):
     beats = detect_beats(music_path)
 
     grouped = group_beats(beats, step=4)
+    print(f"✅ Grouped beats: {len(grouped)}")
     durations = beats_to_durations(grouped)
+    print(f"✅ Generated durations: {len(durations)}")
 
     return durations
