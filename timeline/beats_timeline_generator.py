@@ -20,6 +20,7 @@ def generate_timeline_using_beats(media_files, music_path):
     with open(output_path, "w") as f:
         json.dump(timeline, f, indent=2)
 
+    print(f"✅ Beat timeline saved: {output_path}")
     return timeline
 
 
@@ -175,11 +176,5 @@ def build_timeline(media_files, durations, max_video_reuse=2):
         else:
             break
 
-    # ✅ FINAL END CARD
-    timeline.append({
-        "type": "image",
-        "file": "assets/images/journey-end-card.png",
-        "duration": 4.0
-    })
-
+    
     return timeline

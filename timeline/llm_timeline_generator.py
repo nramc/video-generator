@@ -72,13 +72,4 @@ Output format:
 
     print(f"✅ LLM timeline saved: {output_path}")
 
-
-
-    # ✅ FINAL END CARD
-    timeline.append({
-        "type": "image",
-        "file": "assets/images/journey-end-card.png",
-        "duration": 4.0
-    })
-
     return timeline

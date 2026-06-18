@@ -4,6 +4,7 @@ from moviepy.video.fx import CrossFadeIn
 from renderer.caption import add_title_overlay
 from renderer.clip_normalizer import normalize_clip
 from renderer.image_loader import load_image_clip
+from renderer.journey_end_card import get_end_card
 from utils.effects_utils import ken_burns_effect
 
 
@@ -30,6 +31,10 @@ def render_video(timeline, music_path, output_path, title=None, subtitle=None):
             clip = add_title_overlay(clip, title, subtitle)
 
         clips.append(clip)
+
+     # ✅ FINAL END CARD
+    end_card = get_end_card()
+    clips.append(end_card)
 
     # Add transitions between clips
     clips = [clips[0]] + [clip.with_effects([CrossFadeIn(1)]) for clip in clips[1:]]
