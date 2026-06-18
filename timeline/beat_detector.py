@@ -29,12 +29,33 @@ def beats_to_durations(beat_times):
         for i in range(len(beat_times) - 1)
     ]
 
+def enforce_min_duration(beat_times, min_duration=3.0):
+    filtered = [beat_times[0]]
+    acc_time = 0.0
+
+    for i in range(1, len(beat_times)):
+        delta = beat_times[i] - beat_times[i - 1]
+        acc_time += delta
+
+        if acc_time >= min_duration:
+            filtered.append(beat_times[i])
+            acc_time = 0.0
+
+    return filtered
+
 def generate_duration_using_beats(music_path):
     beats = detect_beats(music_path)
 
     grouped = group_beats(beats, step=4)
     print(f"✅ Grouped beats: {len(grouped)}")
-    durations = beats_to_durations(grouped)
+
+
+    # Enforce minimum duration
+    filtered = enforce_min_duration(grouped, min_duration=3.0)
+    print(f"✅ Grouped beats (min duration 3s): {len(filtered)}")
+
+
+    durations = beats_to_durations(filtered)
     print(f"✅ Generated durations: {len(durations)}")
 
     return durations
