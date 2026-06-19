@@ -6,6 +6,8 @@ from renderer.clip_normalizer import normalize_clip
 from renderer.image_loader import load_image_clip
 from renderer.journey_end_card import get_end_card
 from utils.effects_utils import ken_burns_effect
+from moviepy.audio.fx import AudioLoop
+
 
 
 def render_video(timeline, music_path, output_path, title=None, subtitle=None):
@@ -43,7 +45,14 @@ def render_video(timeline, music_path, output_path, title=None, subtitle=None):
     video = concatenate_videoclips(clips, method="compose")
 
     # Add audio
-    audio = AudioFileClip(music_path).subclipped(0, video.duration)
+    audio = AudioFileClip(music_path)
+
+    if audio.duration < video.duration:
+        audio = audio.with_effects([
+            AudioLoop(duration=video.duration)
+        ])
+    else:
+        audio = audio.subclipped(0, video.duration)
 
 
     final = video.with_audio(audio)
