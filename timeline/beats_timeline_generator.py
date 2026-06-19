@@ -36,7 +36,7 @@ def save_timeline(timeline, output_path=None):
 
     print(f"✅ Timeline saved to {output_path}")
 
-def build_timeline(media_files, durations, max_video_reuse=2):
+def build_timeline(media_files, durations, max_video_reuse=3):
     timeline = []
 
     images, video_files = split_media_files(media_files)
