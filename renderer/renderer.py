@@ -28,10 +28,6 @@ def render_video(timeline, music_path, output_path, title=None, subtitle=None):
         if item["type"] == "image":
             clip = ken_burns_effect(clip)
 
-        # ✅ Apply title only to first clip
-        if i == 0 and title:
-            clip = add_title_overlay(clip, title, subtitle)
-
         clips.append(clip)
 
      # ✅ FINAL END CARD
@@ -41,8 +37,11 @@ def render_video(timeline, music_path, output_path, title=None, subtitle=None):
     # Add transitions between clips
     clips = [clips[0]] + [clip.with_effects([CrossFadeIn(1)]) for clip in clips[1:]]
 
+    composed_video = concatenate_videoclips(clips, method="compose")
 
-    video = concatenate_videoclips(clips, method="compose")
+    # Apply title/subtitle overlay
+    video = add_title_overlay(composed_video, title, subtitle)
+
 
     # Add audio
     audio = AudioFileClip(music_path)

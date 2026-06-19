@@ -5,7 +5,7 @@ import numpy as np
 from renderer.animation import animate_card
 
 
-def add_title_overlay(clip, title, subtitle=None):
+def add_title_overlay(clip, title, subtitle=None, duration=5):
     w, h = clip.size
 
     img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
@@ -92,8 +92,8 @@ def add_title_overlay(clip, title, subtitle=None):
         draw.text((sx + 2, sy + 2), subtitle, font=subtitle_font, fill=(0, 0, 0, 120))
         draw.text((sx, sy), subtitle, font=subtitle_font, fill=(235, 235, 235, 255))
 
-    txt_clip = ImageClip(np.array(img)).with_duration(min(5, clip.duration))
+    txt_clip = ImageClip(np.array(img)).with_duration(duration)
 
-    animated = animate_card(txt_clip, duration=0.5)
+    animated = animate_card(txt_clip, duration=0.8)
 
     return CompositeVideoClip([clip, animated])
