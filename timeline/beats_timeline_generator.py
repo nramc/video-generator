@@ -23,158 +23,194 @@ def generate_timeline_using_beats(media_files, music_path):
     print(f"✅ Beat timeline saved: {output_path}")
     return timeline
 
-
 def build_timeline(media_files, durations, max_video_reuse=2):
     timeline = []
 
-    image_ext = (".jpg", ".jpeg", ".png")
-    video_ext = (".mp4", ".mov", ".mkv")
-
-    images = [f for f in media_files if f.lower().endswith(image_ext)]
-    video_files = [f for f in media_files if f.lower().endswith(video_ext)]
-    
-    with ThreadPoolExecutor(max_workers=4) as executor:
-        videos = list(executor.map(ensure_valid_video, video_files))
-
-
+    images, video_files = split_media_files(media_files)
+    videos = load_videos(video_files)
+    video_info = prepare_video_info(videos)
 
     random.shuffle(images)
-    image_index = 0
 
-    last_video_file = None
-    video_usage = {}             # total seconds used
-    video_count = {}             # number of times used ✅ NEW
-    video_segments_used = {}
-
-    # ✅ cache video metadata
-    video_info = {}
-    for f in videos:
-        clip = VideoFileClip(f)
-        video_info[f] = {
-            "clip": clip,
-            "duration": clip.duration
-        }
+    state = init_state()
 
     for duration in durations:
         duration = float(max(2.0, duration))
 
-        # ✅ decide media type
-        use_video = False
-        if videos:
-            if duration > 3:
-                use_video = True
-            if random.random() < 0.3:
-                use_video = not use_video
+        use_video = should_use_video(duration, videos)
 
-        # ✅ IMAGE (no repetition)
-        if not use_video and image_index < len(images):
-            file = images[image_index]
-            image_index += 1
+        # ✅ IMAGE
+        if not use_video:
+            entry = get_next_image(images, state, duration)
+            if entry:
+                timeline.append(entry)
+                continue
 
-            timeline.append({
-                "type": "image",
-                "file": file,
-                "duration": duration
-            })
-            continue
+        # ✅ VIDEO
+        entry = process_video_clip(
+            duration,
+            videos,
+            video_info,
+            state,
+            max_video_reuse
+        )
 
-        # ✅ VIDEO PATH WITH HARD LIMIT ✅
-        if videos:
-            weighted_pool = []
-
-            for f in videos:
-                # ✅ avoid same video consecutively
-                if f == last_video_file:
-                    continue
-
-                # ✅ HARD LIMIT on reuse
-                if video_count.get(f, 0) >= max_video_reuse:
-                    continue
-
-                info = video_info[f]
-                video_length = info["duration"]
-
-                current_usage = video_usage.get(f, 0)
-                max_usage = video_length * 1.0  # allow reuse up to 1x duration
-
-                remaining = max_usage - current_usage
-                if remaining <= 0:
-                    continue
-
-                # ✅ weight by unused portion
-                weight = remaining
-
-                # ✅ boost videos never used
-                if video_count.get(f, 0) == 0:
-                    weight *= 2
-
-                weighted_pool.append((f, weight))
-
-            # ✅ fallback (relax rules slightly if needed)
-            if not weighted_pool:
-                weighted_pool = [
-                    (f, 1.0)
-                    for f in videos
-                    if f != last_video_file
-                    and video_count.get(f, 0) < max_video_reuse
-                ]
-
-            if not weighted_pool:
-                break
-
-            # ✅ weighted selection
-            files = [f for f, w in weighted_pool]
-            weights = [w for f, w in weighted_pool]
-            file = random.choices(files, weights=weights, k=1)[0]
-
-            info = video_info[file]
-            clip_full = info["clip"]
-            video_length = info["duration"]
-
-            play_duration = duration
-            max_start = max(0, video_length - play_duration)
-
-            # ✅ smart segment selection
-            attempts = 6
-            best_start = 0
-            best_score = -1
-
-            used_segments = video_segments_used.get(file, [])
-
-            for _ in range(attempts):
-                candidate = random.uniform(0, max_start) if max_start > 0 else 0
-
-                if not used_segments:
-                    best_start = candidate
-                    break
-
-                min_distance = min(
-                    (min(abs(candidate - s), abs(candidate - e)) for s, e in used_segments),
-                    default=float("inf")
-                )
-
-                if min_distance > best_score:
-                    best_score = min_distance
-                    best_start = candidate
-
-            start = best_start
-            end = start + play_duration
-
-            # ✅ update trackers
-            last_video_file = file
-            video_usage[file] = video_usage.get(file, 0) + duration
-            video_count[file] = video_count.get(file, 0) + 1   # ✅ NEW
-            video_segments_used.setdefault(file, []).append((start, end))
-
-            timeline.append({
-                "type": "video",
-                "file": file,
-                "start": start,
-                "end": end
-            })
-
+        if entry:
+            timeline.append(entry)
         else:
             break
 
-    
     return timeline
+
+def split_media_files(media_files):
+    image_ext = (".jpg", ".jpeg", ".png")
+    video_ext = (".mp4", ".mov", ".mkv")
+
+    images = [f for f in media_files if f.lower().endswith(image_ext)]
+    videos = [f for f in media_files if f.lower().endswith(video_ext)]
+
+    for f in media_files:
+        if not f.lower().endswith(image_ext) and not f.lower().endswith(video_ext):
+            print(f"⚠️ Unsupported media file (ignored): {f}")
+
+    return images, videos
+
+from concurrent.futures import ThreadPoolExecutor
+
+def load_videos(video_files):
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        return list(executor.map(ensure_valid_video, video_files))
+    
+from moviepy import VideoFileClip
+
+def prepare_video_info(videos):
+    info = {}
+
+    for f in videos:
+        clip = VideoFileClip(f)
+        info[f] = {
+            "clip": clip,
+            "duration": clip.duration
+        }
+
+    return info
+
+def init_state():
+    return {
+        "image_index": 0,
+        "last_video_file": None,
+        "video_usage": {},
+        "video_count": {},
+        "video_segments_used": {}
+    }
+
+def should_use_video(duration, videos):
+    if not videos:
+        return False
+
+    # probability increases with duration
+    prob = min(1.0, max(0.2, duration / 5.0))
+
+    return random.random() < prob
+
+def get_next_image(images, state, duration):
+    if state["image_index"] >= len(images):
+        return None
+
+    file = images[state["image_index"]]
+    state["image_index"] += 1
+
+    return {
+        "type": "image",
+        "file": file,
+        "duration": duration
+    }
+
+def process_video_clip(duration, videos, video_info, state, max_video_reuse):
+    pool = build_weighted_pool(videos, video_info, state, max_video_reuse)
+
+    if not pool:
+        return None
+
+    file = select_video_file(pool)
+
+    start, end = select_video_segment(file, duration, video_info, state)
+
+    update_video_state(file, duration, start, end, state)
+
+    return create_video_entry(file, start, end)
+
+def build_weighted_pool(videos, video_info, state, max_video_reuse):
+    pool = []
+
+    for f in videos:
+        if f == state["last_video_file"]:
+            continue
+
+        if state["video_count"].get(f, 0) >= max_video_reuse:
+            continue
+
+        info = video_info[f]
+        remaining = info["duration"] - state["video_usage"].get(f, 0)
+
+        if remaining <= 0:
+            continue
+
+        weight = remaining
+
+        if state["video_count"].get(f, 0) == 0:
+            weight *= 2
+
+        pool.append((f, weight))
+
+    return pool
+
+def select_video_file(pool):
+    files = [f for f, _ in pool]
+    weights = [w for _, w in pool]
+
+    return random.choices(files, weights=weights, k=1)[0]
+
+def select_video_segment(file, duration, video_info, state):
+    clip = video_info[file]["clip"]
+    video_length = video_info[file]["duration"]
+
+    max_start = max(0, video_length - duration)
+
+    used_segments = state["video_segments_used"].get(file, [])
+
+    best_start = 0
+    best_score = -1
+
+    for _ in range(6):
+        candidate = random.uniform(0, max_start) if max_start > 0 else 0
+
+        if not used_segments:
+            return candidate, candidate + duration
+
+        min_dist = min(
+            min(abs(candidate - start), abs(candidate - end))
+            for start, end in used_segments
+        )
+
+        if min_dist > best_score:
+            best_score = min_dist
+            best_start = candidate
+
+    return best_start, best_start + duration
+
+def update_video_state(file, duration, start, end, state):
+    state["last_video_file"] = file
+
+    state["video_usage"][file] = state["video_usage"].get(file, 0) + duration
+    state["video_count"][file] = state["video_count"].get(file, 0) + 1
+
+    state["video_segments_used"].setdefault(file, []).append((start, end))
+
+def create_video_entry(file, start, end):
+    return {
+        "type": "video",
+        "file": file,
+        "start": start,
+        "end": end
+    }
