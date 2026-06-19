@@ -21,3 +21,26 @@ def validate_timeline(timeline):
         if not os.path.exists(item["file"]):
             raise FileNotFoundError(f"Missing file: {item['file']}")
      
+def get_intro_media(media_files):
+    if not media_files:
+        return None, []
+
+    first = media_files[0]
+    rest = media_files[1:]
+
+    return first, rest
+
+def create_intro_entry(file, duration=5.0):
+    if file.lower().endswith((".mp4", ".mov", ".mkv")):
+        return {
+            "type": "video",
+            "file": file,
+            "start": 0,
+            "end": duration
+        }
+    else:
+        return {
+            "type": "image",
+            "file": file,
+            "duration": duration
+        }

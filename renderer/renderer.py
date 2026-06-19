@@ -44,16 +44,7 @@ def render_video(timeline, music_path, output_path, title=None, subtitle=None):
 
 
     # Add audio
-    audio = AudioFileClip(music_path)
-
-    if audio.duration < video.duration:
-        audio = audio.with_effects([
-            AudioLoop(duration=video.duration)
-        ])
-    else:
-        audio = audio.subclipped(0, video.duration)
-
-
+    audio = get_audio_clip(music_path, video.duration)
     final = video.with_audio(audio)
 
     final.write_videofile(output_path, fps=24)
@@ -77,3 +68,15 @@ def safe_subclip(file, start=None, end=None):
         return clip
 
     return clip.subclipped(start, end)
+
+def get_audio_clip(music_path, target_duration):
+    audio = AudioFileClip(music_path)
+
+    if audio.duration < target_duration:
+        audio = audio.with_effects([
+            AudioLoop(duration=target_duration)
+        ])
+    else:
+        audio = audio.subclipped(0, target_duration)
+
+    return audio

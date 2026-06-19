@@ -1,11 +1,11 @@
 from concurrent.futures import ThreadPoolExecutor
 import json
-from tracemalloc import start
 
 from moviepy import VideoFileClip
 import random
 
 from timeline.beat_detector import generate_duration_using_beats
+from timeline.timeline_builder import create_intro_entry, get_intro_media
 from utils.date_utils import get_file_name_with_date
 from utils.video_normalizer import ensure_valid_video
 
@@ -14,14 +14,27 @@ from utils.video_normalizer import ensure_valid_video
 def generate_timeline_using_beats(media_files, music_path):
     durations = generate_duration_using_beats(music_path)
 
-    timeline = build_timeline(media_files, durations)
+    intro_media, remaining_media = get_intro_media(media_files)
 
-    output_path= "output/"+ get_file_name_with_date("timeline_beat.json")
+    timeline = build_timeline(remaining_media, durations[1:])
+
+
+    if intro_media:
+        intro_entry = create_intro_entry(intro_media, duration=durations[0])
+        timeline.insert(0, intro_entry)
+
+    save_timeline(timeline)
+    return timeline
+
+
+def save_timeline(timeline, output_path=None):
+    if output_path is None:
+        output_path= "output/"+ get_file_name_with_date("timeline_beat.json")
+
     with open(output_path, "w") as f:
         json.dump(timeline, f, indent=2)
 
-    print(f"✅ Beat timeline saved: {output_path}")
-    return timeline
+    print(f"✅ Timeline saved to {output_path}")
 
 def build_timeline(media_files, durations, max_video_reuse=2):
     timeline = []
