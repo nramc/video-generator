@@ -2,8 +2,8 @@ import os
 import subprocess
 import json
 
-from timeline.beat_detector import generate_duration_using_beats
-from utils.date_utils import get_file_name_with_date
+from engine.timeline.beat_detector import generate_duration_using_beats
+from engine.utils.date_utils import get_file_name_with_date
 
 
 def generate_timeline_using_llm(media_files, music_file):

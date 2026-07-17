@@ -1,7 +1,7 @@
 from moviepy import CompositeVideoClip, TextClip, ColorClip, vfx
 
-from renderer.clip_normalizer import normalize_clip
-from renderer.image_loader import load_image_clip
+from engine.renderer.clip_normalizer import normalize_clip
+from engine.renderer.image_loader import load_image_clip
 from moviepy.video.fx import FadeIn, FadeOut, Resize
 
 

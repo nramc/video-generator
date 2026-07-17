@@ -2,7 +2,7 @@ from moviepy import CompositeVideoClip, ImageClip
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 
-from renderer.animation import animate_card
+from engine.renderer.animation import animate_card
 
 
 def add_title_overlay(clip, title, subtitle=None, duration=5):

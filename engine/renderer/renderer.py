@@ -1,11 +1,11 @@
 from moviepy import ImageClip, VideoFileClip, concatenate_videoclips, AudioFileClip
 from moviepy.video.fx import CrossFadeIn
 
-from renderer.caption import add_title_overlay
-from renderer.clip_normalizer import normalize_clip
-from renderer.image_loader import load_image_clip
-from renderer.journey_end_card import get_end_card
-from utils.effects_utils import ken_burns_effect
+from engine.renderer.caption import add_title_overlay
+from engine.renderer.clip_normalizer import normalize_clip
+from engine.renderer.image_loader import load_image_clip
+from engine.renderer.journey_end_card import get_end_card
+from engine.utils.effects_utils import ken_burns_effect
 from moviepy.audio.fx import AudioLoop
 
 

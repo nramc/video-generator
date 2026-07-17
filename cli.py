@@ -1,11 +1,11 @@
 import argparse
 
-from renderer.renderer import render_video
-from timeline.beats_timeline_generator import generate_timeline_using_beats
-from timeline.llm_timeline_generator import generate_timeline_using_llm
-from timeline.timeline_builder import load_timeline
-from utils.date_utils import get_file_name_with_date
-from utils.media_loader import load_media_files
+from engine.renderer.renderer import render_video
+from engine.timeline.beats_timeline_generator import generate_timeline_using_beats
+from engine.timeline.llm_timeline_generator import generate_timeline_using_llm
+from engine.timeline.timeline_builder import load_timeline
+from engine.utils.date_utils import get_file_name_with_date
+from engine.utils.media_loader import load_media_files
 
 
 def main():

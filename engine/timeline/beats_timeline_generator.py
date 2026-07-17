@@ -4,10 +4,10 @@ import json
 from moviepy import VideoFileClip
 import random
 
-from timeline.beat_detector import generate_duration_using_beats
-from timeline.timeline_builder import create_intro_entry, get_intro_media
-from utils.date_utils import get_file_name_with_date
-from utils.video_normalizer import ensure_valid_video
+from engine.timeline.beat_detector import generate_duration_using_beats
+from engine.timeline.timeline_builder import create_intro_entry, get_intro_media
+from engine.utils.date_utils import get_file_name_with_date
+from engine.utils.video_normalizer import ensure_valid_video
 
 
 
