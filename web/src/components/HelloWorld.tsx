@@ -1,5 +1,7 @@
-function Greeting({ name }: Readonly<{ name: string }>) {
-  return <h1>Hello, {name}!</h1>;
+export function HelloWorld() {
+    return (
+        <div>
+            <h1>Hello, World!</h1>
+        </div>
+    );
 }
-
-export { Greeting };

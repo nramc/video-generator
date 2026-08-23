@@ -1,8 +1,8 @@
 import "./App.css";
-import { Greeting } from "./components/HelloWorld";
+import {HelloWorld} from "@/components/HelloWorld.tsx";
 
 function App() {
-  return <Greeting name="World"></Greeting>;
+    return <HelloWorld/>;
 }
 
 export default App;
